@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Performance Predictor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #4facfe);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2d3748;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header .icon {
+            font-size: 1.2em;
+        }
+
+        .header p {
+            color: #718096;
+            font-size: 1.1em;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2d3748;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            background: #f7fafc;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-container {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f093fb 0%, #4facfe 100%);
+            border-radius: 15px;
+            color: white;
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+
+        .result-container.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-header {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .score-display {
+            font-size: 3em;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .student-info {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .error-message {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fed7d7;
+            color: #c53030;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .decoration {
+            position: absolute;
+            opacity: 0.1;
+            font-size: 8em;
+            color: #667eea;
+            z-index: 0;
+        }
+
+        .decoration.top-left {
+            top: -30px;
+            left: -30px;
+        }
+
+        .decoration.bottom-right {
+            bottom: -30px;
+            right: -30px;
+        }
+
+        .container > * {
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="decoration top-left">📚</div>
+        <div class="decoration bottom-right">🎓</div>
+        
+        <div class="header">
+            <h1>
+                <span class="icon">🎓</span>
+                Academic Performance Predictor
+            </h1>
+            <p>Enter Student ID to Predict Exam Score</p>
+        </div>
+
+        <form id="predictionForm">
+            <div class="form-group">
+                <label for="studentId">Student ID</label>
+                <div class="input-wrapper">
+                    <input 
+                        type="number" 
+                        id="studentId" 
+                        name="studentId" 
+                        placeholder="Enter student ID number"
+                        required
+                        min="0"
+                    >
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">
+                Predict Score
+            </button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 10px; color: #718096;">Processing your request...</p>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <div class="result-container" id="resultContainer">
+            <div class="result-header">
+                <span>📊</span>
+                Prediction Result
+            </div>
+            <div class="score-display" id="scoreDisplay">0</div>
+            <div class="student-info">
+                <strong>Student ID:</strong> <span id="studentIdDisplay">-</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('predictionForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const loading = document.getElementById('loading');
+        const errorMessage = document.getElementById('errorMessage');
+        const resultContainer = document.getElementById('resultContainer');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const studentIdDisplay = document.getElementById('studentIdDisplay');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const studentId = document.getElementById('studentId').value;
+            
+            // Reset UI
+            errorMessage.classList.remove('show');
+            resultContainer.classList.remove('show');
+            loading.classList.add('show');
+            submitBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id: studentId })
+                });
+                
+                const data = await response.json();
+                
+                loading.classList.remove('show');
+                submitBtn.disabled = false;
+                
+                if (response.ok && data.success) {
+                    // Animate score
+                    const targetScore = data.exam_score;
+                    animateScore(0, targetScore);
+                    studentIdDisplay.textContent = data.id;
+                    resultContainer.classList.add('show');
+                } else {
+                    errorMessage.textContent = data.error || 'An error occurred';
+                    errorMessage.classList.add('show');
+                }
+            } catch (error) {
+                loading.classList.remove('show');
+                submitBtn.disabled = false;
+                errorMessage.textContent = 'Network error. Please try again.';
+                errorMessage.classList.add('show');
+            }
+        });
+
+        function animateScore(start, end) {
+            const duration = 1000; // 1 second
+            const startTime = performance.now();
+            
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Easing function
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const current = start + (end - start) * easeOut;
+                
+                scoreDisplay.textContent = current.toFixed(2);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                } else {
+                    scoreDisplay.textContent = end.toFixed(2);
+                }
+            }
+            
+            requestAnimationFrame(update);
+        }
+    </script>
+</body>
+</html>
